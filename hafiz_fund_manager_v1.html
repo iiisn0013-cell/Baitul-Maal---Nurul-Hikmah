@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#14532d">
+<title>ระบบจัดการกองทุนโรงเรียนฮาฟิส</title>
+<style>
+:root{--green:#14532d;--green2:#166534;--bg:#f4f7f5;--card:#fff;--text:#17221b;--muted:#637168;--line:#dce5de;--red:#b42318;--amber:#92400e;--blue:#1d4ed8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;line-height:1.45}
+header{background:linear-gradient(135deg,#14532d,#166534);color:#fff;padding:22px max(16px,calc((100% - 1180px)/2))}
+header h1{margin:0 0 5px;font-size:clamp(21px,4vw,30px)}header p{margin:0;color:#e0f2e7}
+main{max-width:1180px;margin:0 auto;padding:16px}
+.notice{background:#fff7e6;border:1px solid #f1d49b;border-radius:12px;padding:12px 14px;margin-bottom:16px;color:#70450b;font-size:14px}
+nav{display:flex;gap:8px;overflow:auto;padding:4px 0 14px}
+nav button{white-space:nowrap;border:1px solid var(--line);background:#fff;color:var(--text);padding:10px 13px;border-radius:10px;font-weight:650;cursor:pointer}
+nav button.active{background:var(--green);color:#fff;border-color:var(--green)}
+.page{display:none}.page.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 2px 8px #122b1908}
+.metric .label{font-size:13px;color:var(--muted)}.metric .value{font-size:clamp(21px,3vw,28px);font-weight:800;margin-top:5px;overflow-wrap:anywhere}.metric .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel h2{font-size:18px;margin:0 0 13px}.panel h3{font-size:16px;margin:0 0 12px}
+form .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+label{display:block;font-size:13px;font-weight:650;margin-bottom:5px;color:#34443a}
+input,select,textarea{width:100%;border:1px solid #cbd8ce;border-radius:9px;padding:10px 11px;background:white;color:var(--text);font:inherit;min-height:42px}
+textarea{min-height:75px;resize:vertical}
+button{font:inherit}button.primary,.primary{background:var(--green);color:white;border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}
+button.secondary{background:#edf3ef;color:#1c3c29;border:1px solid #d3e0d6;border-radius:9px;padding:9px 12px;font-weight:650;cursor:pointer}
+button.danger{background:#fff0ef;color:var(--red);border:1px solid #f3c7c3;border-radius:9px;padding:8px 10px;cursor:pointer}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.help{color:var(--muted);font-size:12px;margin-top:6px}
+.tablewrap{overflow:auto;margin-top:12px}table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}th,td{text-align:left;padding:10px 9px;border-bottom:1px solid #e7ede8;vertical-align:top}th{font-size:12px;color:var(--muted);font-weight:750;background:#f8faf8;position:sticky;top:0}td.num,th.num{text-align:right;white-space:nowrap}.pill{display:inline-block;padding:3px 8px;border-radius:99px;background:#e8f6ec;color:#166534;font-size:12px;font-weight:700}.pill.warn{background:#fff3d9;color:#92400e}.pill.bad{background:#ffebea;color:#b42318}
+.empty{padding:20px;color:var(--muted);text-align:center}.sectionhead{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.sectionhead h2{margin:0}.small{font-size:12px;color:var(--muted)}.balance{font-weight:800}.positive{color:#166534}.negative{color:#b42318}
+#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#14251a;color:white;padding:11px 16px;border-radius:10px;display:none;z-index:9;max-width:90vw;box-shadow:0 5px 20px #0002}
+footer{max-width:1180px;margin:0 auto;padding:0 16px 24px;color:var(--muted);font-size:12px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}}
+@media(max-width:480px){main{padding:12px}.grid{gap:8px}.card{padding:12px}.metric .value{font-size:21px}form .fields{grid-template-columns:1fr}.panel{padding:13px}}
+@media print{header{background:#fff;color:#000;padding:10px}header p{color:#333}nav,.notice,.actions,form,button{display:none!important}body{background:#fff}.page{display:none!important}.page.active{display:block!important}.panel,.card{box-shadow:none;break-inside:avoid}main{max-width:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>ระบบจัดการกองทุนบำรุงโรงเรียนฮาฟิส</h1>
+  <p>บันทึกเงินสมทบ · ค่าใช้จ่ายโรงเรียน · เงินกู้ปลอดดอกเบี้ย · ตรวจสอบย้อนหลัง</p>
+</header>
+<main>
+  <div class="notice"><strong>ข้อควรรู้:</strong> รุ่นทดลองนี้เก็บข้อมูลไว้ในเบราว์เซอร์ของอุปกรณ์นี้เท่านั้น ยังไม่ซิงก์กับอุปกรณ์อื่นหรือผู้ใช้อื่น โปรดส่งออกไฟล์สำรองเป็นประจำ และอย่าบันทึกข้อมูลจริงจนกว่าจะทดสอบระบบและตกลงวิธีควบคุมสิทธิ์การใช้งานร่วมกับผู้บริหาร</div>
+  <nav id="nav">
+    <button class="active" data-page="dashboard">ภาพรวม</button>
+    <button data-page="members">สมาชิก</button>
+    <button data-page="contributions">เงินสมทบ</button>
+    <button data-page="expenses">รายจ่ายโรงเรียน</button>
+    <button data-page="loans">เงินกู้</button>
+    <button data-page="reports">รายงาน/สำรองข้อมูล</button>
+  </nav>
+
+  <section id="dashboard" class="page active">
+    <div class="grid">
+      <div class="card metric"><div class="label">เงินพร้อมใช้โดยประมาณ</div><div class="value" id="cashBalance">฿0.00</div><div class="sub">ยอดตั้งต้น + เงินรับจริง − เงินจ่ายจริง</div></div>
+      <div class="card metric"><div class="label">เงินสมทบที่รับเดือนนี้</div><div class="value" id="monthCollected">฿0.00</div><div class="sub" id="monthExpected">ยอดเป้าหมาย: ยังไม่มีสมาชิก</div></div>
+      <div class="card metric"><div class="label">เงินต้นที่สมาชิกค้างคืน</div><div class="value" id="loanOutstanding">฿0.00</div><div class="sub">ยอดเงินกู้ที่จ่ายแล้ว − เงินต้นที่รับคืน</div></div>
+      <div class="card metric"><div class="label">ค่าใช้จ่ายโรงเรียนเดือนนี้</div><div class="value" id="monthExpenses">฿0.00</div><div class="sub">จากรายการรายจ่ายที่บันทึกไว้</div></div>
+    </div>
+    <div class="two">
+      <div class="panel"><h2>สถานะเงินสมทบเดือนนี้</h2><div id="contributionStatus" class="empty">ยังไม่มีข้อมูล</div></div>
+      <div class="panel"><h2>รายการล่าสุด</h2><div id="recentActivity" class="empty">ยังไม่มีรายการ</div></div>
+    </div>
+    <div class="panel" style="margin-top:14px"><h2>เริ่มต้นใช้งาน</h2><ol><li>เพิ่มรายชื่อสมาชิกในเมนู <strong>สมาชิก</strong></li><li>บันทึกเงินสมทบเมื่อได้รับเงินจริงในเมนู <strong>เงินสมทบ</strong></li><li>บันทึกค่าน้ำ ค่าไฟ อินเทอร์เน็ต และรายจ่ายอื่นในเมนู <strong>รายจ่ายโรงเรียน</strong></li><li>บันทึกเงินกู้เมื่ออนุมัติและจ่ายเงินจริง แล้วบันทึกการคืนเงินทุกครั้งในเมนู <strong>เงินกู้</strong></li><li>หากทราบยอดเงินที่มีอยู่ก่อนเริ่มใช้ ให้บันทึกเป็นยอดตั้งต้นพร้อมวันที่และหลักฐานในเมนูรายงาน</li></ol><p class="help">ห้ามบันทึกเงินกู้ที่เพียงอนุมัติแต่ยังไม่ได้จ่ายเป็นเงินจ่ายจริง และควรให้ผู้รับผิดชอบอีกคนตรวจสอบรายการสำคัญ</p></div>
+  </section>
+
+  <section id="members" class="page">
+    <div class="two">
+      <div class="panel"><h2 id="memberFormTitle">เพิ่มสมาชิก</h2><form id="memberForm"><input type="hidden" id="memberId"><div class="fields">
+        <div><label for="memberName">ชื่อสมาชิก *</label><input id="memberName" required maxlength="100" placeholder="ชื่อ-นามสกุล"></div>
+        <div><label for="memberPhone">เบอร์โทร (ถ้ามี)</label><input id="memberPhone" maxlength="40" placeholder="ไม่บังคับ"></div>
+        <div><label for="memberStart">เริ่มเป็นสมาชิก</label><input id="memberStart" type="date"></div>
+        <div><label for="memberStatus">สถานะ</label><select id="memberStatus"><option value="active">สมาชิกปัจจุบัน</option><option value="inactive">พ้นสภาพ/พักสมาชิก</option></select></div>
+      </div><div class="actions"><button class="primary" type="submit">บันทึกสมาชิก</button><button class="secondary" type="button" onclick="resetMemberForm()">ล้างฟอร์ม</button></div></form></div>
+      <div class="panel"><h2>หลักการจัดการสมาชิก</h2><p>อัตราสมทบตั้งต้น 200 บาทต่อเดือนต่อสมาชิก ระบบไม่สร้างรายการจ่ายให้อัตโนมัติ ต้องบันทึกเมื่อได้รับเงินจริงเท่านั้น</p><p class="help">หากสมาชิกหยุดสมทบ ให้เปลี่ยนสถานะเป็น “พ้นสภาพ/พักสมาชิก” แทนการลบ เพื่อรักษาประวัติเดิม</p></div>
+    </div>
+    <div class="panel" style="margin-top:14px"><div class="sectionhead"><h2>รายชื่อสมาชิก</h2><input id="memberSearch" style="max-width:280px" placeholder="ค้นหาชื่อสมาชิก" oninput="renderMembers()"></div><div id="membersTable" class="tablewrap"></div></div>
+  </section>
+
+  <section id="contributions" class="page">
+    <div class="two">
+      <div class="panel"><h2>บันทึกเงินสมทบที่ได้รับจริง</h2><form id="contributionForm"><div class="fields">
+        <div><label for="conMember">สมาชิก *</label><select id="conMember" required></select></div>
+        <div><label for="conAmount">จำนวนเงิน (บาท) *</label><input id="conAmount" type="number" min="0.01" step="0.01" value="200" required></div>
+        <div><label for="conDate">วันที่ได้รับ *</label><input id="conDate" type="date" required></div>
+        <div><label for="conMonth">สมทบสำหรับเดือน *</label><input id="conMonth" type="month" required></div>
+        <div><label for="conMethod">ช่องทางรับเงิน</label><select id="conMethod"><option>โอนธนาคาร</option><option>เงินสด</option><option>ช่องทางอื่น</option></select></div>
+        <div><label for="conRef">เลขอ้างอิง/หมายเหตุ</label><input id="conRef" maxlength="160" placeholder="เช่น เลขสลิป (ไม่ควรใส่ข้อมูลลับ)"></div>
+      </div><div class="actions"><button class="primary" type="submit">บันทึกเงินสมทบ</button></div></form><p class="help">ถ้าสมาชิกจ่ายรวมหลายเดือน ให้แยกบันทึกตามเดือนที่เงินนั้นครอบคลุม เพื่อให้รายงานแม่นยำ</p></div>
+      <div class="panel"><h2>วิธีอ่านสถานะ</h2><p><span class="pill">จ่ายครบ</span> มีรายการสมทบรวมสำหรับเดือนนั้นอย่างน้อย 200 บาท</p><p><span class="pill warn">จ่ายบางส่วน</span> ยอดที่รับยังต่ำกว่า 200 บาท</p><p><span class="pill bad">ยังไม่พบรายการ</span> ยังไม่มีรายการรับเงินสำหรับเดือนนั้น (ควรตรวจสอบก่อนทวงถาม)</p><p class="help">ระบบไม่ตัดสินว่าค้างชำระโดยอัตโนมัติ เพราะอาจมีการยกเว้นหรือข้อตกลงพิเศษที่ผู้บริหารต้องยืนยัน</p></div>
+    </div>
+    <div class="panel" style="margin-top:14px"><div class="sectionhead"><h2>ประวัติเงินสมทบ</h2><input id="conFilterMonth" type="month" style="max-width:190px" onchange="renderContributions()"></div><div id="contributionsTable" class="tablewrap"></div></div>
+  </section>
+
+  <section id="expenses" class="page">
+    <div class="two">
+      <div class="panel"><h2>บันทึกรายจ่ายโรงเรียน</h2><form id="expenseForm"><div class="fields">
+        <div><label for="expDate">วันที่จ่าย *</label><input id="expDate" type="date" required></div>
+        <div><label for="expCategory">หมวดรายจ่าย *</label><select id="expCategory"><option>ค่าไฟฟ้า</option><option>ค่าน้ำประปา</option><option>ค่าอินเทอร์เน็ต</option><option>ซ่อมแซม/บำรุงรักษา</option><option>อุปกรณ์การเรียน</option><option>อาหาร/ของใช้</option><option>อื่น ๆ</option></select></div>
+        <div><label for="expAmount">จำนวนเงิน (บาท) *</label><input id="expAmount" type="number" min="0.01" step="0.01" required></div>
+        <div><label for="expPayee">ผู้รับเงิน/หน่วยงาน</label><input id="expPayee" maxlength="100" placeholder="เช่น การไฟฟ้า"></div>
+        <div><label for="expMethod">ช่องทางจ่าย</label><select id="expMethod"><option>โอนธนาคาร</option><option>เงินสด</option><option>ช่องทางอื่น</option></select></div>
+        <div><label for="expRef">เลขใบเสร็จ/อ้างอิง</label><input id="expRef" maxlength="160"></div>
+      </div><label for="expNote" style="margin-top:10px">รายละเอียดเพิ่มเติม</label><textarea id="expNote" maxlength="500" placeholder="ระบุเดือนบิลหรือวัตถุประสงค์"></textarea><div class="actions"><button class="primary" type="submit">บันทึกรายจ่าย</button></div></form></div>
+      <div class="panel"><h2>หลักฐานและการควบคุม</h2><ul><li>เก็บใบเสร็จหรือสลิปต้นฉบับแยกต่างหาก</li><li>ใส่เลขอ้างอิงเพื่อเชื่อมโยงรายการกับหลักฐาน</li><li>ตรวจสอบยอดกับบัญชีธนาคารเป็นประจำ</li><li>รุ่นนี้เก็บข้อความอ้างอิงเท่านั้น ยังไม่เก็บไฟล์รูปใบเสร็จ</li></ul></div>
+    </div>
+    <div class="panel" style="margin-top:14px"><div class="sectionhead"><h2>ประวัติรายจ่าย</h2><input id="expFilterMonth" type="month" style="max-width:190px" onchange="renderExpenses()"></div><div id="expensesTable" class="tablewrap"></div></div>
+  </section>
+
+  <section id="loans" class="page">
+    <div class="two">
+      <div class="panel"><h2>บันทึกการจ่ายเงินกู้</h2><form id="loanForm"><div class="fields">
+        <div><label for="loanMember">ผู้กู้ *</label><select id="loanMember" required></select></div>
+        <div><label for="loanAmount">เงินต้นที่จ่าย (บาท) *</label><input id="loanAmount" type="number" min="0.01" step="0.01" required></div>
+        <div><label for="loanDate">วันที่จ่ายเงินจริง *</label><input id="loanDate" type="date" required></div>
+        <div><label for="loanFirstDue">กำหนดชำระงวดแรก</label><input id="loanFirstDue" type="date"></div>
+        <div><label for="loanInstallment">ค่างวดเป้าหมาย (บาท/เดือน)</label><input id="loanInstallment" type="number" min="0" step="0.01" placeholder="ไม่บังคับ"></div>
+        <div><label for="loanRef">เลขที่สัญญา/อ้างอิง</label><input id="loanRef" maxlength="100"></div>
+      </div><label for="loanNote" style="margin-top:10px">หมายเหตุ/เงื่อนไขที่ตกลง</label><textarea id="loanNote" maxlength="500" placeholder="บันทึกข้อตกลงที่ได้รับอนุมัติ"></textarea><div class="actions"><button class="primary" type="submit">บันทึกการจ่ายเงินกู้</button></div></form><p class="help">ไม่มีดอกเบี้ย ระบบติดตามเฉพาะเงินต้นที่จ่ายจริงและเงินต้นที่รับคืน</p></div>
+      <div class="panel"><h2>บันทึกการคืนเงินต้น</h2><form id="repayForm"><div class="fields">
+        <div><label for="repayLoan">สัญญาเงินกู้ *</label><select id="repayLoan" required></select></div>
+        <div><label for="repayAmount">เงินต้นที่รับคืน (บาท) *</label><input id="repayAmount" type="number" min="0.01" step="0.01" required></div>
+        <div><label for="repayDate">วันที่รับคืน *</label><input id="repayDate" type="date" required></div>
+        <div><label for="repayMethod">ช่องทางรับคืน</label><select id="repayMethod"><option>โอนธนาคาร</option><option>เงินสด</option><option>ช่องทางอื่น</option></select></div>
+        <div><label for="repayRef">เลขอ้างอิง/ใบรับเงิน</label><input id="repayRef" maxlength="160"></div>
+      </div><div class="actions"><button class="primary" type="submit">บันทึกเงินต้นที่รับคืน</button></div></form><p class="help">ระบบจะไม่อนุญาตให้รับคืนเกินยอดเงินต้นคงเหลือของสัญญา</p></div>
+    </div>
+    <div class="panel" style="margin-top:14px"><h2>สัญญาเงินกู้และยอดคงเหลือ</h2><div id="loansTable" class="tablewrap"></div></div>
+    <div class="panel" style="margin-top:14px"><h2>ประวัติการคืนเงิน</h2><div id="repaymentsTable" class="tablewrap"></div></div>
+  </section>
+
+  <section id="reports" class="page">
+    <div class="two">
+      <div class="panel"><h2>ยอดตั้งต้น</h2><p>ใช้เมื่อตรวจสอบยอดเงินจริง ณ วันที่เริ่มใช้ระบบได้แล้วเท่านั้น อย่าใส่ตัวเลขประมาณการ</p><form id="openingForm"><div class="fields">
+        <div><label for="openingAmount">ยอดเงินสด/เงินฝาก ณ วันตั้งต้น (บาท) *</label><input id="openingAmount" type="number" min="0" step="0.01" required></div>
+        <div><label for="openingDate">วันที่ยอดนี้เป็นจริง *</label><input id="openingDate" type="date" required></div>
+        <div><label for="openingRef">หลักฐาน/แหล่งข้อมูล</label><input id="openingRef" maxlength="200" placeholder="เช่น ยอดบัญชีธนาคาร ณ วันที่..."></div>
+      </div><div class="actions"><button class="primary" type="submit">บันทึก/ปรับยอดตั้งต้น</button></div></form><p class="help">การบันทึกยอดตั้งต้นใหม่จะแทนยอดตั้งต้นเดิม ควรทำโดยผู้มีอำนาจและมีหลักฐานรองรับ</p><div id="openingStatus" class="small"></div></div>
+      <div class="panel"><h2>สรุปตามช่วงเวลา</h2><div class="fields">
+        <div><label for="reportFrom">ตั้งแต่เดือน</label><input id="reportFrom" type="month"></div>
+        <div><label for="reportTo">ถึงเดือน</label><input id="reportTo" type="month"></div>
+      </div><div class="actions"><button class="secondary" onclick="renderReport()">คำนวณรายงาน</button><button class="secondary" onclick="window.print()">พิมพ์รายงาน</button></div><div id="reportSummary" style="margin-top:12px"></div></div>
+    </div>
+    <div class="panel" style="margin-top:14px"><h2>สำรองข้อมูล / กู้คืนข้อมูล</h2><p>ส่งออกไฟล์ JSON เพื่อสำรองข้อมูลทั้งหมด รวมถึงรายการและบันทึกการแก้ไข ดาวน์โหลดไฟล์เก็บในที่ปลอดภัย และทดสอบนำเข้ากับสำเนาก่อนใช้กู้คืนจริง</p><div class="actions"><button class="primary" onclick="exportBackup()">ดาวน์โหลดไฟล์สำรอง JSON</button><button class="secondary" onclick="exportCSV()">ส่งออกรายการธุรกรรม CSV</button><label class="secondary" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer">นำเข้าไฟล์สำรอง<input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="importBackup(event)"></label></div><p class="help">การนำเข้าจะแทนที่ข้อมูลในเบราว์เซอร์นี้ทั้งหมด โปรดสำรองข้อมูลปัจจุบันก่อนทุกครั้ง</p></div>
+    <div class="panel" style="margin-top:14px"><h2>บันทึกประวัติการทำรายการ</h2><p class="help">ระบบเก็บเหตุการณ์เพิ่มรายการไว้เพื่อช่วยตรวจสอบ แต่รุ่นนี้ยังไม่มีระบบผู้ใช้/สิทธิ์และไม่ใช่บันทึกที่แก้ไขไม่ได้</p><div id="auditTable" class="tablewrap"></div></div>
+  </section>
+</main>
+<footer>รุ่นทดลองสำหรับจัดการภายใน · ตรวจสอบกติกากองทุนและยอดเงินจริงกับผู้บริหารก่อนใช้ตัดสินใจ · ไม่เชื่อมต่อบัญชีธนาคารอัตโนมัติ</footer>
+<div id="toast" role="status"></div>
+<script>
+const KEY='hafiz_fund_v1';
+const today=()=>new Date().toLocaleDateString('en-CA');
+const monthNow=()=>today().slice(0,7);
+const money=n=>'฿'+Number(n||0).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
+let db;
+function fresh(){return {version:1,opening:null,members:[],contributions:[],expenses:[],loans:[],repayments:[],audit:[]}}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));db=x&&x.version===1?x:fresh()}catch{db=fresh()}}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
+function log(action,detail){db.audit.unshift({id:uid(),date:new Date().toISOString(),action,detail});db.audit=db.audit.slice(0,500)}
+function toast(s){const t=document.getElementById('toast');t.textContent=s;t.style.display='block';setTimeout(()=>t.style.display='none',2800)}
+function sum(a,fn){return a.reduce((n,x)=>n+fn(x),0)}
+function memberName(id){return db.members.find(x=>x.id===id)?.name||'สมาชิกที่ไม่พบในรายชื่อ'}
+function loanBalance(l){return Math.max(0,Number(l.amount)-sum(db.repayments.filter(r=>r.loanId===l.id),r=>Number(r.amount)))}
+function optionList(id,selected,includeInactive=false){const el=document.getElementById(id);const ms=db.members.filter(m=>includeInactive||m.status==='active');el.innerHTML='<option value="">เลือกสมาชิก</option>'+ms.map(m=>`<option value="${esc(m.id)}" ${m.id===selected?'selected':''}>${esc(m.name)}${m.status==='inactive'?' (พักสมาชิก)':''}</option>`).join('')}
+function renderSelects(){optionList('conMember');optionList('loanMember');const s=document.getElementById('repayLoan');const open=db.loans.filter(l=>loanBalance(l)>0);s.innerHTML='<option value="">เลือกสัญญาเงินกู้</option>'+open.map(l=>`<option value="${esc(l.id)}">${esc(memberName(l.memberId))} · ${esc(l.ref||l.id)} · คงเหลือ ${money(loanBalance(l))}</option>`).join('')}
+function renderDashboard(){
+ const m=monthNow(),active=db.members.filter(x=>x.status==='active').length;
+ const received=sum(db.contributions,c=>Number(c.amount)),expenses=sum(db.expenses,e=>Number(e.amount)),loanOut=sum(db.loans,l=>Number(l.amount)),repaid=sum(db.repayments,r=>Number(r.amount));
+ const cash=(Number(db.opening?.amount)||0)+received+repaid-expenses-loanOut;
+ document.getElementById('cashBalance').textContent=money(cash);
+ const mc=sum(db.contributions.filter(c=>c.month===m),c=>Number(c.amount));
+ document.getElementById('monthCollected').textContent=money(mc);
+ document.getElementById('monthExpected').textContent=`เป้าหมายตามสมาชิกปัจจุบัน: ${money(active*200)} (${active} คน × 200 บาท)`;
+ document.getElementById('loanOutstanding').textContent=money(sum(db.loans,loanBalance));
+ document.getElementById('monthExpenses').textContent=money(sum(db.expenses.filter(e=>e.date?.slice(0,7)===m),e=>Number(e.amount)));
+ const list=db.members.filter(x=>x.status==='active').map(x=>{const v=sum(db.contributions.filter(c=>c.memberId===x.id&&c.month===m),c=>Number(c.amount));return {name:x.name,v}}); 
+ document.getElementById('contributionStatus').innerHTML=list.length?`<div class="small">อัตราสมทบตั้งต้น 200 บาท/คน/เดือน</div><div class="tablewrap"><table><thead><tr><th>สมาชิก</th><th class="num">รับแล้ว</th><th>สถานะ</th></tr></thead><tbody>${list.map(x=>`<tr><td>${esc(x.name)}</td><td class="num">${money(x.v)}</td><td>${x.v>=200?'<span class="pill">จ่ายครบ</span>':x.v>0?'<span class="pill warn">จ่ายบางส่วน</span>':'<span class="pill bad">ยังไม่พบรายการ</span>'}</td></tr>`).join('')}</tbody></table></div>`:'ยังไม่มีสมาชิกที่ใช้งานอยู่';
+ const all=[...db.contributions.map(x=>({...x,kind:'เงินสมทบ',desc:memberName(x.memberId),date:x.date,amount:x.amount})),...db.expenses.map(x=>({...x,kind:'รายจ่าย',desc:x.category,date:x.date,amount:-x.amount})),...db.loans.map(x=>({...x,kind:'จ่ายเงินกู้',desc:memberName(x.memberId),date:x.date,amount:-x.amount})),...db.repayments.map(x=>({...x,kind:'รับคืนเงินกู้',desc:memberName(db.loans.find(l=>l.id===x.loanId)?.memberId),date:x.date,amount:x.amount}))].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,8);
+ document.getElementById('recentActivity').innerHTML=all.length?`<div class="tablewrap"><table><thead><tr><th>วันที่</th><th>รายการ</th><th class="num">จำนวนเงิน</th></tr></thead><tbody>${all.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.kind)}<div class="small">${esc(x.desc)}</div></td><td class="num ${x.amount<0?'negative':'positive'}">${x.amount<0?'−':'+'}${money(Math.abs(x.amount))}</td></tr>`).join('')}</tbody></table></div>`:'ยังไม่มีรายการ';
+}
+function renderMembers(){const q=(document.getElementById('memberSearch')?.value||'').toLowerCase();const a=db.members.filter(m=>m.name.toLowerCase().includes(q));document.getElementById('membersTable').innerHTML=a.length?`<table><thead><tr><th>ชื่อ</th><th>เบอร์โทร</th><th>วันที่เริ่ม</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody>${a.map(m=>`<tr><td>${esc(m.name)}</td><td>${esc(m.phone||'—')}</td><td>${esc(m.start||'—')}</td><td>${m.status==='active'?'<span class="pill">ปัจจุบัน</span>':'<span class="pill warn">พักสมาชิก</span>'}</td><td><button class="secondary" onclick="editMember('${m.id}')">แก้ไข</button> <button class="danger" onclick="deleteMember('${m.id}')">ลบ*</button></td></tr>`).join('')}</tbody></table><p class="help">*ลบได้เฉพาะสมาชิกที่ยังไม่มีธุรกรรม</p>`:'<div class="empty">ไม่พบสมาชิก</div>'}
+function renderContributions(){const f=document.getElementById('conFilterMonth').value;const a=db.contributions.filter(c=>!f||c.month===f).slice().sort((a,b)=>b.date.localeCompare(a.date));document.getElementById('contributionsTable').innerHTML=a.length?`<table><thead><tr><th>วันที่รับ</th><th>เดือนที่สมทบ</th><th>สมาชิก</th><th>ช่องทาง</th><th>อ้างอิง</th><th class="num">จำนวนเงิน</th><th>จัดการ</th></tr></thead><tbody>${a.map(c=>`<tr><td>${esc(c.date)}</td><td>${esc(c.month)}</td><td>${esc(memberName(c.memberId))}</td><td>${esc(c.method)}</td><td>${esc(c.ref||'—')}</td><td class="num">${money(c.amount)}</td><td><button class="danger" onclick="deleteRecord('contributions','${c.id}','เงินสมทบ')">ลบรายการ</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty">ยังไม่มีรายการเงินสมทบ</div>'}
+function renderExpenses(){const f=document.getElementById('expFilterMonth').value;const a=db.expenses.filter(e=>!f||e.date.slice(0,7)===f).slice().sort((a,b)=>b.date.localeCompare(a.date));document.getElementById('expensesTable').innerHTML=a.length?`<table><thead><tr><th>วันที่</th><th>หมวด</th><th>ผู้รับเงิน</th><th>อ้างอิง</th><th>รายละเอียด</th><th class="num">จำนวนเงิน</th><th>จัดการ</th></tr></thead><tbody>${a.map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.category)}</td><td>${esc(e.payee||'—')}</td><td>${esc(e.ref||'—')}</td><td>${esc(e.note||'—')}</td><td class="num">${money(e.amount)}</td><td><button class="danger" onclick="deleteRecord('expenses','${e.id}','รายจ่าย')">ลบรายการ</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty">ยังไม่มีรายการรายจ่าย</div>'}
+function renderLoans(){const a=db.loans.slice().sort((a,b)=>b.date.localeCompare(a.date));document.getElementById('loansTable').innerHTML=a.length?`<table><thead><tr><th>วันที่จ่าย</th><th>ผู้กู้</th><th>อ้างอิง</th><th class="num">เงินต้น</th><th class="num">คืนแล้ว</th><th class="num">คงเหลือ</th><th>งวดแรก</th><th>จัดการ</th></tr></thead><tbody>${a.map(l=>{const rep=sum(db.repayments.filter(r=>r.loanId===l.id),r=>Number(r.amount)),bal=loanBalance(l);return `<tr><td>${esc(l.date)}</td><td>${esc(memberName(l.memberId))}</td><td>${esc(l.ref||'—')}<div class="small">${esc(l.note||'')}</div></td><td class="num">${money(l.amount)}</td><td class="num">${money(rep)}</td><td class="num balance">${money(bal)}</td><td>${esc(l.firstDue||'—')}<div class="small">${l.installment?money(l.installment)+'/เดือน':''}</div></td><td><button class="danger" onclick="deleteRecord('loans','${l.id}','สัญญาเงินกู้')">ลบ*</button></td></tr>`}).join('')}</tbody></table><p class="help">*ลบสัญญาได้เฉพาะกรณียังไม่มีรายการคืนเงิน</p>`:'<div class="empty">ยังไม่มีสัญญาเงินกู้</div>';
+ const r=db.repayments.slice().sort((a,b)=>b.date.localeCompare(a.date));document.getElementById('repaymentsTable').innerHTML=r.length?`<table><thead><tr><th>วันที่รับคืน</th><th>ผู้กู้</th><th>สัญญา</th><th>ช่องทาง</th><th>อ้างอิง</th><th class="num">เงินต้นที่คืน</th><th>จัดการ</th></tr></thead><tbody>${r.map(x=>{const l=db.loans.find(z=>z.id===x.loanId);return `<tr><td>${esc(x.date)}</td><td>${esc(memberName(l?.memberId))}</td><td>${esc(l?.ref||l?.id||'—')}</td><td>${esc(x.method)}</td><td>${esc(x.ref||'—')}</td><td class="num">${money(x.amount)}</td><td><button class="danger" onclick="deleteRecord('repayments','${x.id}','รายการคืนเงิน')">ลบรายการ</button></td></tr>`}).join('')}</tbody></table>`:'<div class="empty">ยังไม่มีรายการคืนเงิน</div>'}
+function renderReport(){const from=document.getElementById('reportFrom').value,to=document.getElementById('reportTo').value;const inRange=d=>{const m=(d||'').slice(0,7);return (!from||m>=from)&&(!to||m<=to)};const c=sum(db.contributions.filter(x=>inRange(x.date)),x=>Number(x.amount)),e=sum(db.expenses.filter(x=>inRange(x.date)),x=>Number(x.amount)),o=sum(db.loans.filter(x=>inRange(x.date)),x=>Number(x.amount)),r=sum(db.repayments.filter(x=>inRange(x.date)),x=>Number(x.amount));document.getElementById('reportSummary').innerHTML=`<table><tbody><tr><th>เงินสมทบที่ได้รับ</th><td class="num">${money(c)}</td></tr><tr><th>รายจ่ายโรงเรียน</th><td class="num">${money(e)}</td></tr><tr><th>เงินกู้ที่จ่าย</th><td class="num">${money(o)}</td></tr><tr><th>เงินต้นที่รับคืน</th><td class="num">${money(r)}</td></tr><tr><th>เงินสดเปลี่ยนแปลงสุทธิในช่วง</th><td class="num">${money(c-e-o+r)}</td></tr><tr><th>ยอดเงินต้นคงค้างทั้งหมด</th><td class="num">${money(sum(db.loans,loanBalance))}</td></tr></tbody></table>`}
+function renderAudit(){const a=db.audit.slice(0,100);document.getElementById('auditTable').innerHTML=a.length?`<table><thead><tr><th>เวลา</th><th>เหตุการณ์</th><th>รายละเอียด</th></tr></thead><tbody>${a.map(x=>`<tr><td>${esc(new Date(x.date).toLocaleString('th-TH'))}</td><td>${esc(x.action)}</td><td>${esc(x.detail)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">ยังไม่มีประวัติการทำรายการ</div>'}
+function renderAll(){renderSelects();renderDashboard();renderMembers();renderContributions();renderExpenses();renderLoans();renderReport();renderAudit();document.getElementById('openingStatus').textContent=db.opening?`ยอดตั้งต้นปัจจุบัน ${money(db.opening.amount)} ณ ${db.opening.date} · ${db.opening.ref||'ไม่มีหมายเหตุ'}`:'ยังไม่ได้บันทึกยอดตั้งต้น'}
+document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-page]');if(!b)return;document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===b.dataset.page))});
+function resetMemberForm(){document.getElementById('memberForm').reset();document.getElementById('memberId').value='';document.getElementById('memberFormTitle').textContent='เพิ่มสมาชิก'}
+function editMember(id){const m=db.members.find(x=>x.id===id);if(!m)return;document.getElementById('memberId').value=m.id;document.getElementById('memberName').value=m.name;document.getElementById('memberPhone').value=m.phone||'';document.getElementById('memberStart').value=m.start||'';document.getElementById('memberStatus').value=m.status;document.getElementById('memberFormTitle').textContent='แก้ไขสมาชิก';document.getElementById('memberName').focus();window.scrollTo({top:0,behavior:'smooth'})}
+function deleteMember(id){const m=db.members.find(x=>x.id===id);if(!m)return;const used=db.contributions.some(x=>x.memberId===id)||db.loans.some(x=>x.memberId===id);if(used){toast('ลบไม่ได้: สมาชิกมีประวัติธุรกรรม ให้เปลี่ยนสถานะเป็นพักสมาชิกแทน');return}if(confirm(`ยืนยันลบสมาชิก ${m.name}?`)){db.members=db.members.filter(x=>x.id!==id);log('ลบสมาชิก',m.name);save();toast('ลบสมาชิกแล้ว')}}
+document.getElementById('memberForm').addEventListener('submit',e=>{e.preventDefault();const id=document.getElementById('memberId').value,name=document.getElementById('memberName').value.trim();if(!name)return;const data={name,phone:document.getElementById('memberPhone').value.trim(),start:document.getElementById('memberStart').value,status:document.getElementById('memberStatus').value};if(id){Object.assign(db.members.find(x=>x.id===id),data);log('แก้ไขสมาชิก',name)}else{db.members.push({id:uid(),...data});log('เพิ่มสมาชิก',name)}save();resetMemberForm();toast('บันทึกสมาชิกแล้ว')});
+document.getElementById('contributionForm').addEventListener('submit',e=>{e.preventDefault();const amount=Number(document.getElementById('conAmount').value);if(!(amount>0))return;const x={id:uid(),memberId:document.getElementById('conMember').value,amount,date:document.getElementById('conDate').value,month:document.getElementById('conMonth').value,method:document.getElementById('conMethod').value,ref:document.getElementById('conRef').value.trim()};if(!x.memberId)return;db.contributions.push(x);log('รับเงินสมทบ',`${memberName(x.memberId)} ${money(amount)} สำหรับ ${x.month}`);save();document.getElementById('conAmount').value=200;document.getElementById('conRef').value='';toast('บันทึกเงินสมทบแล้ว')});
+document.getElementById('expenseForm').addEventListener('submit',e=>{e.preventDefault();const amount=Number(document.getElementById('expAmount').value);if(!(amount>0))return;const x={id:uid(),date:document.getElementById('expDate').value,category:document.getElementById('expCategory').value,amount,payee:document.getElementById('expPayee').value.trim(),method:document.getElementById('expMethod').value,ref:document.getElementById('expRef').value.trim(),note:document.getElementById('expNote').value.trim()};db.expenses.push(x);log('บันทึกรายจ่าย',`${x.category} ${money(amount)} วันที่ ${x.date}`);save();e.target.reset();document.getElementById('expDate').value=today();toast('บันทึกรายจ่ายแล้ว')});
+document.getElementById('loanForm').addEventListener('submit',e=>{e.preventDefault();const amount=Number(document.getElementById('loanAmount').value);if(!(amount>0))return;const x={id:uid(),memberId:document.getElementById('loanMember').value,amount,date:document.getElementById('loanDate').value,firstDue:document.getElementById('loanFirstDue').value,installment:Number(document.getElementById('loanInstallment').value)||0,ref:document.getElementById('loanRef').value.trim(),note:document.getElementById('loanNote').value.trim()};if(!x.memberId)return;if(amount>cashAvailable()){if(!confirm(`เงินพร้อมใช้ตามระบบ ${money(cashAvailable())} ต่ำกว่ายอดกู้ ${money(amount)} ต้องการบันทึกต่อหรือไม่? โปรดตรวจยอดจริงก่อน`))return}db.loans.push(x);log('บันทึกจ่ายเงินกู้',`${memberName(x.memberId)} ${money(amount)} ${x.ref}`);save();e.target.reset();document.getElementById('loanDate').value=today();toast('บันทึกเงินกู้แล้ว')});
+function cashAvailable(){return (Number(db.opening?.amount)||0)+sum(db.contributions,x=>Number(x.amount))+sum(db.repayments,x=>Number(x.amount))-sum(db.expenses,x=>Number(x.amount))-sum(db.loans,x=>Number(x.amount))}
+document.getElementById('repayForm').addEventListener('submit',e=>{e.preventDefault();const loanId=document.getElementById('repayLoan').value,amount=Number(document.getElementById('repayAmount').value),l=db.loans.find(x=>x.id===loanId);if(!l||!(amount>0))return;const bal=loanBalance(l);if(amount>bal+0.00001){toast('ยอดรับคืนเกินเงินต้นคงเหลือ');return}const x={id:uid(),loanId,amount,date:document.getElementById('repayDate').value,method:document.getElementById('repayMethod').value,ref:document.getElementById('repayRef').value.trim()};db.repayments.push(x);log('รับคืนเงินต้น',`${memberName(l.memberId)} ${money(amount)} สัญญา ${l.ref||l.id}`);save();e.target.reset();document.getElementById('repayDate').value=today();toast('บันทึกการคืนเงินแล้ว')});
+document.getElementById('openingForm').addEventListener('submit',e=>{e.preventDefault();const amount=Number(document.getElementById('openingAmount').value);if(!(amount>=0))return;const data={amount,date:document.getElementById('openingDate').value,ref:document.getElementById('openingRef').value.trim()};if(db.opening&&!confirm('การบันทึกนี้จะแทนยอดตั้งต้นเดิม ยืนยันหรือไม่?'))return;db.opening=data;log('ตั้ง/ปรับยอดตั้งต้น',`${money(amount)} ณ ${data.date} ${data.ref}`);save();toast('บันทึกยอดตั้งต้นแล้ว')});
+function deleteRecord(collection,id,label){let x=db[collection].find(z=>z.id===id);if(!x)return;if(collection==='loans'&&db.repayments.some(r=>r.loanId===id)){toast('ลบไม่ได้: สัญญานี้มีรายการคืนเงินแล้ว');return}if(!confirm(`ยืนยันลบ${label}รายการนี้? การลบจะถูกบันทึกในประวัติ`))return;let detail=label+' '+(x.date||'')+' '+money(x.amount);db[collection]=db[collection].filter(z=>z.id!==id);log('ลบ'+label,detail);save();toast('ลบรายการแล้ว')}
+function download(name,content,type){const blob=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportBackup(){download('hafiz-fund-backup-'+today()+'.json',JSON.stringify(db,null,2),'application/json')}
+function exportCSV(){const rows=[['ประเภท','วันที่','รายละเอียด','จำนวนเงิน','อ้างอิง'],...db.contributions.map(x=>['เงินสมทบ',x.date,memberName(x.memberId)+' / '+x.month,x.amount,x.ref]),...db.expenses.map(x=>['รายจ่ายโรงเรียน',x.date,x.category+' / '+x.payee,x.amount,x.ref]),...db.loans.map(x=>['จ่ายเงินกู้',x.date,memberName(x.memberId)+' / '+x.ref,-x.amount,x.ref]),...db.repayments.map(x=>['รับคืนเงินกู้',x.date,memberName(db.loans.find(l=>l.id===x.loanId)?.memberId),x.amount,x.ref])];const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');download('hafiz-fund-transactions-'+today()+'.csv','\ufeff'+csv,'text/csv;charset=utf-8')}
+function importBackup(ev){const file=ev.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const x=JSON.parse(reader.result);if(x.version!==1||!Array.isArray(x.members)||!Array.isArray(x.contributions)||!Array.isArray(x.expenses)||!Array.isArray(x.loans)||!Array.isArray(x.repayments)||!Array.isArray(x.audit))throw new Error('รูปแบบไฟล์ไม่ถูกต้อง');if(!confirm('คำเตือน: การนำเข้าจะแทนที่ข้อมูลทั้งหมดในอุปกรณ์นี้ ควรดาวน์โหลดไฟล์สำรองปัจจุบันก่อน ยืนยันนำเข้าหรือไม่?'))return;db=x;save();toast('นำเข้าข้อมูลสำเร็จ')}catch(err){alert('นำเข้าไม่สำเร็จ: '+err.message)}finally{ev.target.value=''}};reader.readAsText(file)}
+load();
+for(const id of ['conDate','expDate','loanDate','repayDate'])document.getElementById(id).value=today();
+document.getElementById('conMonth').value=monthNow();document.getElementById('conFilterMonth').value=monthNow();document.getElementById('expFilterMonth').value=monthNow();document.getElementById('reportFrom').value=monthNow();document.getElementById('reportTo').value=monthNow();
+renderAll();
+</script>
+</body>
+</html>
